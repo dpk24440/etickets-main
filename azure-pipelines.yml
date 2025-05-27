@@ -29,7 +29,7 @@ stages:
         SonarCloud: 'Sonar Cloud'
         organization: 'vprofile-action24'
         scannerMode: 'MSBuild'
-        projectKey: 'vprofile-action240_vprofile24'
+        projectKey: 'vprofile24'
         projectName: 'etickets'
     - task: DotNetCoreCLI@2
       inputs:
