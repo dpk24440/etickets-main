@@ -43,3 +43,27 @@ stages:
         jdkVersion: 'JAVA_HOME_17_X64'  # Adjust the JDK version if needed
     
 
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      inputs:
+        repository: '$(imageRepository)'
+        command: 'build'
+        Dockerfile: './Dockerfile'
+        tags: |
+          $(tag)
+    - task: ECRPushImage@1
+      inputs:
+        awsCredentials: 'aws-service-account-name'
+        regionName: '$(awsRegion)'
+        imageSource: 'imagename'
+        sourceImageName: '$(imageRepository)'
+        sourceImageTag: '$(tag)'
+        repositoryName: '$(imageRepository)'
+        pushTag: '$(tag)'
