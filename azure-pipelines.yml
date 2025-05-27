@@ -6,7 +6,10 @@ trigger:
 resources:
 - repo: self
 variables:
-  tag: '$(Build.BuildId)'
+- group: vprofilevariables
+- name: tag
+  value: '$(Build.BuildId)'
+  
 #pool:
  # Default
 stages:
@@ -24,9 +27,9 @@ stages:
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'Sonar Cloud'
-        organization: 'demoaks'
+        organization: 'vprofile-action24'
         scannerMode: 'MSBuild'
-        projectKey: 'demoaks_etickets'
+        projectKey: 'vprofile-action240_vprofile24'
         projectName: 'etickets'
     - task: DotNetCoreCLI@2
       inputs:
