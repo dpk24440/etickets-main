@@ -24,13 +24,15 @@ stages:
       inputs:
         packageType: 'sdk'
         version: '7.x'
+    
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'Sonar Cloud'
-        organization: 'vprofile-action24'
+        organization: 'vprofile-action240'
         scannerMode: 'MSBuild'
-        projectKey: 'vprofile24'
+        projectKey: 'vprofile-action240_vprofile24'
         projectName: 'etickets'
+        
     - task: DotNetCoreCLI@2
       inputs:
         command: 'build'
