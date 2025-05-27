@@ -41,7 +41,5 @@ stages:
     - task: SonarCloudAnalyze@1
       inputs:
         jdkVersion: 'JAVA_HOME_17_X64'  # Adjust the JDK version if needed
-    - task: SonarCloudPublish@1
-      inputs:
-        pollingTimeoutSec: '300'
+    
 
