@@ -43,27 +43,31 @@ stages:
         jdkVersion: 'JAVA_HOME_17_X64'  # Adjust the JDK version if needed
     
 
-- stage: Build
-  displayName: Build stage
+- stage: Build_and_Push
+  variables:
+    - group: vprofilevariables  # includes awsRegion, containerRegistry, imageRepository
+    - name: tag
+      value: '$(Build.BuildId)'
+
   jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-      inputs:
-        repository: '$(imageRepository)'
-        command: 'build'
-        Dockerfile: './Dockerfile'
-        tags: |
-          $(tag)
-    - task: ECRPushImage@1
-      inputs:
-        awsCredentials: 'aws-service-account-name'
-        regionName: '$(awsRegion)'
-        imageSource: 'imagename'
-        sourceImageName: '$(imageRepository)'
-        sourceImageTag: '$(tag)'
-        repositoryName: '$(imageRepository)'
-        pushTag: '$(tag)'
+    - job: Build_and_Push_Job
+      displayName: Build and Push Docker Image to AWS ECR
+      pool:
+        name: Default
+      steps:
+        - checkout: self
+
+        - script: |
+            echo "Logging into AWS ECR..."
+            aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID)
+            aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY)
+            aws configure set default.region $(awsRegion)
+
+            aws ecr get-login-password --region $(awsRegion) | docker login --username AWS --password-stdin $(containerRegistry)
+
+            echo "Building Docker image..."
+            docker build -t $(containerRegistry)/$(imageRepository):$(tag) .
+
+            echo "Pushing Docker image to ECR..."
+            docker push $(containerRegistry)/$(imageRepository):$(tag)
+          displayName: 'Build and Push Docker Image'
