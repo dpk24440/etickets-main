@@ -43,20 +43,20 @@ stages:
         jdkVersion: 'JAVA_HOME_17_X64'  # Adjust the JDK version if needed
     
 
-# Stage 2: Build and Push Docker Image to AWS ECR
 - stage: Build_and_Push
   displayName: 'Build and Push Docker Image'
   dependsOn: Sonar_Job
   condition: succeeded()
   jobs:
-  - job: Build_and_Push_Job
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
+    - job: Build_and_Push_Job
+      displayName: 'Build and Push Docker Image to AWS ECR'
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - checkout: self
 
-    - script: |
-        echo "Build Info:"
+        - script: |
+            echo "Build Info:"
             echo "Registry: $containerRegistry"
             echo "Repository: $imageRepository"
             echo "Tag: $tag"
@@ -74,7 +74,7 @@ stages:
 
             echo "Pushing Docker image to ECR..."
             docker push $containerRegistry/$imageRepository:$tag
-          displayName: 'Build and Push Docker Image to AWS ECR'
+          displayName: 'Run Build and Push'
           env:
             AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
             AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
