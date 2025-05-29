@@ -82,3 +82,29 @@ stages:
             containerRegistry: $(containerRegistry)
             imageRepository: $(imageRepository)
             tag: $(tag)
+
+- stage: Deploy_to_EKS
+  variables:
+    - group: vprofilevariables # Contains AWS credentials or other secure variables
+  jobs:
+    - deployment: Deploy_to_EKS_Job
+      environment: 'EKS_Environment'
+      pool:
+        vmImage: 'ubuntu-latest'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+
+              - task: AWSCLI@1
+                inputs:
+                  awsCredentials: 'aws-service-account-name'
+                  regionName: 'ap-northeast-1'
+
+              - script: |
+                  aws eks update-kubeconfig --region ap-northeast-1 --name your-eks-cluster-name
+
+                  kubectl apply -f deployment.yaml
+                displayName: 'Deploy to EKS'
+
