@@ -51,7 +51,7 @@ stages:
   jobs:
   - job: Build_and_Push_Job
     pool:
-      name: Default
+      vmImage: 'ubuntu-latest'
     steps:
     - checkout: self
 
